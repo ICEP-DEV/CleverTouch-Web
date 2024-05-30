@@ -1,0 +1,33 @@
+.video-uploader {
+    margin: 20px auto;
+    max-width: 600px;
+    text-align: center;
+  }
+  
+  .uploader-title {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .file-input {
+    display: block;
+    margin: 20px auto;
+  }
+  
+  .selected-file {
+    margin-top: 20px;
+  }
+  
+  .file-info {
+    color: #666;
+    font-size: 16px;
+  }
+  
+  .video-preview {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 10px;
+  }
+  

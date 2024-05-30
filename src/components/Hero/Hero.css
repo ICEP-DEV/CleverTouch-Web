@@ -1,0 +1,16 @@
+.hero {
+    position: relative;
+    height: 500px; /* Adjust the height as needed */
+    background-image: url('background.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white; /* Text color */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  
+  

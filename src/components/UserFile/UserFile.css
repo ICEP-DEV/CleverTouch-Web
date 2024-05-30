@@ -1,0 +1,13 @@
+.screenshot {
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .thumbnail {
+    max-width: 150px; /* Small size for the screenshot */
+  }
+  
+  .expanded {
+    max-width: 100%; /* Full size for the screenshot */
+  }
+  

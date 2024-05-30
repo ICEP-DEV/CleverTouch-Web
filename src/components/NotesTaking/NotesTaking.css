@@ -1,0 +1,73 @@
+/* NotesTaking.css */
+
+.notes-taker-container {
+  max-width: 500px;
+  margin: 0px auto 0; /* Added margin-top */
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.notes-taker-textarea {
+  width: 100%;
+  height: 300px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: vertical;
+}
+
+.notes-taker-save-button,
+.notes-taker-clear-button { /* Added .notes-taker-clear-button */
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px; /* Added margin-bottom for spacing */
+  background-color: purple;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.notes-taker-save-button:hover,
+.notes-taker-clear-button:hover { /* Adjusted hover effect for both buttons */
+  background-color: rgb(236, 56, 236);
+}
+
+.notes-taker-title-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+@media only screen and (max-width: 600px) {
+  .notes-taker-container {
+    max-width: 90%;
+    margin: 20px auto 0; /* Adjust margin as needed */
+  }
+
+  .notes-taker-textarea {
+    height: 200px; /* Adjust height for smaller screens */
+  }
+
+  .notes-taker-save-button,
+  .notes-taker-clear-button,
+  .notes-taker-title-input {
+    font-size: 14px; /* Adjust font size for smaller screens */
+  }
+}
+.icon {
+  width: 20px; /* Adjust the width and height as needed */
+  height: 20px;
+}
+.notes-taker-container button img.icon {
+  width: 20px; /* Adjust the width and height as needed */
+  height: 20px;
+}
