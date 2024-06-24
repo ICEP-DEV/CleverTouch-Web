@@ -3,9 +3,16 @@ import './LoginPopup.css';
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
+import { user_details } from "../../Redux/user";
 
 const LoginPopup = ({ setShowLogin }) => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const user_info = useSelector((state) => state.user); // Accessing user state from Redux
+
+    console.log('redux info', user_info);
+
     const [currState, setCurrState] = useState("Sign Up");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -26,6 +33,7 @@ const LoginPopup = ({ setShowLogin }) => {
             console.log("User created successfully!");
             setCurrState("Login");
             setShowSuccessAlert(true); // Set showSuccessAlert to true after successful user creation
+            localStorage.setItem('userName', name);
         }).catch(error => {
             console.error('Error:', error);
         });
@@ -36,17 +44,27 @@ const LoginPopup = ({ setShowLogin }) => {
             email: email,
             password: password,
         }).then(response => {
-            console.log("User logged in successfully!");
-            const userData = response.data;
-            localStorage.setItem('user', JSON.stringify(userData));
-            navigate('/AccessPage');
-            setShowForm(false);
-            window.location.reload();
+            if (response.data.success) {
+                const userData = {
+                    user_id: response.data.result[0].id,
+                    user_email: response.data.result[0].email,
+                    user_name: response.data.result[0].name,
+                };
+
+                console.log("Response Data:", userData);
+                dispatch(user_details(userData)); // Dispatch user details to Redux store
+                localStorage.setItem('user', JSON.stringify(userData)); // Store user info in localStorage
+                navigate('/AccessPage'); // Navigate to AccessPage after successful login
+                window.location.reload();
+            } else {
+                alert(response.data.message);
+            }
         }).catch(error => {
             console.error('Error:', error);
             setShowErrorAlert(true); // Set showErrorAlert to true for wrong username or password
         });
     };
+
     const handleSignUp = (e) => {
         e.preventDefault();
         const errors = {};
@@ -57,7 +75,7 @@ const LoginPopup = ({ setShowLogin }) => {
         } else if (!/^[A-Z][a-zA-Z]{2,}$/.test(name.trim())) {
             errors.name = "Name must start with an uppercase letter and contain only letters";
         }
-        
+
         if (!email.trim()) {
             errors.email = "Email is required";
         } else if (!/\S+@\S+\.\S+/.test(email)) {
@@ -70,7 +88,7 @@ const LoginPopup = ({ setShowLogin }) => {
         } else if (!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/\d/.test(password) || !/[!@#$%^&*]/.test(password)) {
             errors.password = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character";
         }
-        
+
         if (!agreeTerms) {
             errors.agreeTerms = "Please agree to the terms";
         }
@@ -83,7 +101,7 @@ const LoginPopup = ({ setShowLogin }) => {
 
     const handleHideForm = () => {
         setShowForm(false);
-        window.location.reload();
+        window.location.reload(); // Refresh the page on hiding the form
     };
 
     const handleForgotPassword = () => {

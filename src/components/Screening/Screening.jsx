@@ -7,38 +7,38 @@ import "./Screening.css";
 import { saveAs } from 'file-saver';
 import capture from '../../assets/capture.png';
 import { saveScreenshot, loadScreenshots } from './actions'; // Adjust the import path as necessary
+import remove from '../../assets/remove.png';
+import edit from '../../assets/edit.png';
+import download from '../../assets/download.png';
+import highlight from '../../assets/highlight.png';
+import done from '../../assets/done.png';
+import undoIcon from '../../assets/undo.png';
+import redoIcon from '../../assets/redo.png'; // Ensure these are valid imports and file paths
 
 function Screening({ saveScreenshot, loadScreenshots, screenshots }) {
-    // Ref for the video element
     const videoRef = useRef(null);
+    const canvasRef = useRef(null);
     const [screenshotDataUrl, setScreenshotDataUrl] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [drawing, setDrawing] = useState(false);
+    const [color, setColor] = useState('rgba(255, 255, 0, 0.5)'); // Default highlight color
+    const [history, setHistory] = useState([]);
+    const [redoStack, setRedoStack] = useState([]);
 
     useEffect(() => {
-      loadScreenshots(screenshots);
+        loadScreenshots(screenshots);
     }, [loadScreenshots, screenshots]);
 
-    // Function to capture screenshot
     const captureScreenshot = () => {
-        // Get the video element
         const videoElement = videoRef.current;
 
-        // Ensure the video is playing and has loaded before taking the screenshot
         if (videoElement.readyState >= 2 && !videoElement.paused) {
             html2canvas(videoElement)
                 .then(canvas => {
-                    // Convert canvas to image
                     const dataUrl = canvas.toDataURL('image/png');
-
-                    // Set the screenshot data URL
                     setScreenshotDataUrl(dataUrl);
-
-                    // Dispatch action to save screenshot in Redux store
-                    saveScreenshot(dataUrl);
-
-                    // Save the screenshot as a file 
-                    saveFile(dataUrl); 
-                    
-                    
+                    setShowModal(true);
                 })
                 .catch(error => {
                     console.error('Error capturing screenshot:', error);
@@ -46,23 +46,14 @@ function Screening({ saveScreenshot, loadScreenshots, screenshots }) {
         }
     };
 
-    // Function to save file
     const saveFile = (dataUrl) => {
-        // Convert the data URL to a Blob
         const blob = dataURLtoBlob(dataUrl);
-
-        // Get the current date
         const date = new Date();
-        const formattedDate = date.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-
-        // Create the filename with the date
+        const formattedDate = date.toISOString().split('T')[0];
         const fileName = `screenshot_${formattedDate}.png`;
-
-        // Save the Blob as a file
         saveAs(blob, fileName);
     };
 
-    // Function to convert data URL to Blob
     const dataURLtoBlob = (dataUrl) => {
         const arr = dataUrl.split(',');
         const mime = arr[0].match(/:(.*?);/)[1];
@@ -75,33 +66,173 @@ function Screening({ saveScreenshot, loadScreenshots, screenshots }) {
         return new Blob([u8arr], { type: mime });
     };
 
-    return(
-        <div className="container-fluid screening"> {/* Use container-fluid for full width */}
+    const startDrawing = (e) => {
+        
+        const canvas = canvasRef.current;
+        const rect = canvas.getBoundingClientRect();
+        const offsetX = e.clientX - rect.left;
+        const offsetY = e.clientY - rect.top;
+    
+        setDrawing(true);
+        const ctx = canvas.getContext('2d');
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 7;
+        ctx.moveTo(offsetX * (canvas.width / rect.width), offsetY * (canvas.height / rect.height));
+    };
+    
+    
+    const draw = (e) => {
+        if (!drawing) return;
+        const canvas = canvasRef.current;
+        const rect = canvas.getBoundingClientRect();
+        const offsetX = e.clientX - rect.left;
+        const offsetY = e.clientY - rect.top;
+    
+        const ctx = canvas.getContext('2d');
+        ctx.lineTo(offsetX * (canvas.width / rect.width), offsetY * (canvas.height / rect.height));
+        ctx.stroke();
+    };
+    
+    const stopDrawing = () => {
+        if (!drawing) return;
+        const canvas = canvasRef.current;
+        setHistory([...history, canvas.toDataURL('image/png')]);
+        setDrawing(false);
+    };
+
+    const initializeCanvas = () => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        const image = new Image();
+        image.src = screenshotDataUrl;
+        canvas.width = image.width;
+        canvas.height = image.height;
+        ctx.drawImage(image, 0, 0);
+        // Store initial state in history
+        setHistory([canvas.toDataURL('image/png')]);
+    };
+    
+    useEffect(() => {
+        if (isEditing && screenshotDataUrl) {
+            initializeCanvas();
+        }
+    }, [isEditing, screenshotDataUrl]);
+
+    const undo = () => {
+        if (history.length === 0) return;
+        const lastState = history.pop();
+        setRedoStack([...redoStack, canvasRef.current.toDataURL('image/png')]);
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        const image = new Image();
+        image.src = lastState;
+        image.onload = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(image, 0, 0);
+        };
+    };
+
+    const redo = () => {
+        if (redoStack.length === 0) return;
+        const nextState = redoStack.pop();
+        setHistory([...history, canvasRef.current.toDataURL('image/png')]);
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        const image = new Image();
+        image.src = nextState;
+        image.onload = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(image, 0, 0);
+        };
+    };
+
+    return (
+        <div className="container-fluid screening">
             <div className="overlay">
                 <h2 className="wlc"></h2>
                 <h1 className="title"></h1>
                 <button onClick={captureScreenshot} className="button" style={{ backgroundImage: `url(${capture})` }}></button>
 
-                <div id="divToTakeScreenShotOf"></div>
-                <div></div>
-                <video ref={videoRef} src={video} autoPlay loop muted className="video-bg"/>
-                <div className="container">
-                    {/* Your content goes here */}
-                </div>
+                <video ref={videoRef} src={video} autoPlay loop muted className="video-bg" />
             </div>
-            {/* Display the captured screenshot */}
-            {screenshotDataUrl && <img src={screenshotDataUrl} alt="Screenshot"/>}
+            {showModal && (
+                <div className="modal">
+                    <div className="modal-content">
+                        {!isEditing ? (
+                            <img src={screenshotDataUrl} alt="Screenshot" />
+                        ) : (
+                            <div>
+                                <canvas
+    ref={canvasRef}
+    onMouseDown={startDrawing}
+    onMouseMove={draw}
+    onMouseUp={() => setDrawing(false)}
+    onMouseOut={() => setDrawing(false)}
+    style={{ border: '1px solid black' }}
+/>
+
+                                <div>
+                                <button onClick={undo}>
+                                        <img src={undoIcon} alt="Undo" style={{ width: '20px', height: '20px' }} />
+                                    </button>
+                                    <button onClick={redo}>
+                                        <img src={redoIcon} alt="Redo" style={{ width: '20px', height: '20px' }} />
+                                    </button>
+                                    <label htmlFor="colorPicker">
+                                        <img src={highlight} alt="Highlight Color" />
+                                    </label>
+                                    <input
+                                        type="color"
+                                        id="colorPicker"
+                                        onChange={(e) => setColor(e.target.value + '80')} // Adding opacity to the color
+                                        defaultValue="#ffff00"
+                                        style={{ display: 'none' }}
+                                    />
+                                </div>
+                            </div>
+                        )}
+                        <div>
+                            <button onClick={() => {
+                                if (isEditing) {
+                                    const canvas = canvasRef.current;
+                                    const dataUrl = canvas.toDataURL('image/png');
+                                    setScreenshotDataUrl(dataUrl);
+                                }
+                                setIsEditing(!isEditing);
+                            }} className="edit-button">
+                                <img src={isEditing ? done : edit} alt={isEditing ? 'Finish Editing' : 'Edit'} />
+                            </button>
+                            <button onClick={() => {
+                                if (isEditing) {
+                                    const canvas = canvasRef.current;
+                                    const dataUrl = canvas.toDataURL('image/png');
+                                    saveFile(dataUrl);
+                                } else {
+                                    saveFile(screenshotDataUrl);
+                                }
+                                setShowModal(false);
+                            }} className="save-button">
+                                <img src={download} alt="Save" />
+                            </button>
+                            <button onClick={() => setShowModal(false)} className="cancel-button">
+                                <img src={remove} alt="Cancel" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
 const mapStateToProps = state => ({
-  screenshots: state.screenshots,
+    screenshots: state.screenshots,
 });
 
 const mapDispatchToProps = {
-  saveScreenshot,
-  loadScreenshots,
+    saveScreenshot,
+    loadScreenshots,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Screening);

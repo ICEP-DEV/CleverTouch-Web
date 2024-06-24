@@ -1,0 +1,24 @@
+/* Present.css */
+
+
+.present-container {
+    max-width: 1200px; /* Set a maximum width for the container */
+    margin: 0 auto; /* Center the container horizontally */
+    padding: 20px; /* Add some padding */
+  }
+  
+  .present-title {
+    text-align: center; /* Center the title */
+  }
+  
+  .present-content {
+    display: flex; /* Use flexbox for the content */
+    justify-content: space-between; /* Space elements evenly */
+  }
+  
+  .notes-popup-container {
+    flex-grow: 1; /* Allow the container to grow and fill available space */
+    display: flex; /* Use flexbox for the container */
+    flex-direction: column; /* Stack components vertically */
+  }
+  

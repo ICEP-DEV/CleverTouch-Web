@@ -1,38 +1,31 @@
-/* ProfileDropdown.css */
 .profile-dropdown {
     position: relative;
     display: inline-block;
-}
-
-.profile-icon {
-    width: 40px;
-    height: 40px;
-    background-color: #f44336;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  }
+  
+  .profile-dropdown button {
+    background: none;
+    border: none;
     cursor: pointer;
-    font-weight: bold;
-}
-
-.dropdown-menu {
+    font-size: 16px;
+  }
+  
+  .dropdown-menu {
     position: absolute;
-    top: 50px;
     right: 0;
-    background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    overflow: hidden;
-    z-index: 1;
-}
-
-.menu-item {
-    padding: 10px 20px;
+    background: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .dropdown-menu li {
+    padding: 8px 16px;
     cursor: pointer;
-}
-
-.menu-item:hover {
-    background-color: #f0f0f0;
-}
+  }
+  
+  .dropdown-menu li:hover {
+    background: #f1f1f1;
+  }
+  
