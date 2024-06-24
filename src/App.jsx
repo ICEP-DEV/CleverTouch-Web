@@ -7,6 +7,8 @@ import Home from './Home';
 import About from './About';
 import AccessPage from './AccessPage';
 import Present from './Present';
+import UserFile from './UserFile';
+import UserNotes from './UserNotes';
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -35,9 +37,11 @@ const App = () => {
           <Route path="/about" element={<About />} />
           <Route path="/AccessPage" element={<AccessPage />} />
           <Route path="/present" element={<Present />} />
+          <Route path="/userfile" element={<UserFile />} />
+          <Route path="/userNotes" element={<UserNotes />} />
         </Routes>
       </div>
-      <Footer />
+     
     </Router>
   );
 }

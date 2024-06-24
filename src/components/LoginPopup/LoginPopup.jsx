@@ -26,6 +26,7 @@ const LoginPopup = ({ setShowLogin }) => {
             console.log("User created successfully!");
             setCurrState("Login");
             setShowSuccessAlert(true); // Set showSuccessAlert to true after successful user creation
+            localStorage.setItem('userName', name);
         }).catch(error => {
             console.error('Error:', error);
         });
@@ -36,12 +37,16 @@ const LoginPopup = ({ setShowLogin }) => {
             email: email,
             password: password,
         }).then(response => {
-            console.log("User logged in successfully!");
-            const userData = response.data;
-            localStorage.setItem('user', JSON.stringify(userData));
-            navigate('/AccessPage');
-            setShowForm(false);
-            window.location.reload();
+            console.log("User logged in successfully!", response.data);
+        const userData = response.data;
+        console.log(response.data.result[0].id)
+        localStorage.setItem('user', JSON.stringify(response.data.result[0].name));
+        localStorage.setItem('savedEmail', email);
+       
+        localStorage.setItem('userName', userData.name); // Ensure userData.name exists
+       navigate('/AccessPage');
+        setShowForm(false);
+       window.location.reload();
         }).catch(error => {
             console.error('Error:', error);
             setShowErrorAlert(true); // Set showErrorAlert to true for wrong username or password

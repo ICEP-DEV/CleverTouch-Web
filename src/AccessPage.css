@@ -48,4 +48,9 @@
   .custom-margin-bottom {
     margin-bottom: 100px; /* Adjust this value as needed */
   }
-  
+  .welcomeMessage {
+    font-size: 1.2em;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: gray;
+}

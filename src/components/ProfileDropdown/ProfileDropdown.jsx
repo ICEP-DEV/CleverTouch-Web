@@ -2,26 +2,24 @@ import React, { useState } from 'react';
 import './ProfileDropdown.css';
 
 const ProfileDropdown = ({ user, onLogout }) => {
-    const [showMenu, setShowMenu] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-    const toggleMenu = () => {
-        setShowMenu(!showMenu);
-    };
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
 
-    return (
-        <div className="profile-dropdown">
-            <div className="profile-icon" onClick={toggleMenu}>
-                {user.initials}
-            </div>
-            {showMenu && (
-                <div className="dropdown-menu">
-                    <div className="menu-item">Customize</div>
-                    <div className="menu-item">Settings</div>
-                    <div className="menu-item" onClick={onLogout}>Log out</div>
-                </div>
-            )}
-        </div>
-    );
+  return (
+    <div className="profile-dropdown">
+      <button onClick={toggleDropdown}>
+        {user.name}
+      </button>
+      {dropdownOpen && (
+        <ul className="dropdown-menu">
+          <li onClick={onLogout}>Logout</li>
+        </ul>
+      )}
+    </div>
+  );
 };
 
 export default ProfileDropdown;
